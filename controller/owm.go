@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,25 +11,30 @@ import (
 const token string = "da303db859918e01a675709c157ca661"
 
 var (
-	geoCodeURL string = "http://api.openweathermap.org/geo/1.0/direct?q=,&appid="
-	cityGeoi   string
+	url  string = "http://api.openweathermap.org/geo/1.0/direct?q=,&appid="
+	city string
 )
+
+type Hueta struct {
+	Lat float64 `json:"lat"`
+	Lon float64 `json:"lon"`
+}
 
 func buildURL() string {
 	fmt.Print("Enter your city: ")
-	fmt.Scanln(&cityGeoi)
-	geoCodeURL = "http://api.openweathermap.org/geo/1.0/direct?q=" + cityGeoi + ",&appid="
-	geoCodeURL = geoCodeURL + token
+	fmt.Scanln(&city)
+	url = "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
+	url = url + token
 
-	return geoCodeURL
+	return url
 }
 
 func GetGeocode() {
 
 	buildURL()
-	fmt.Println(geoCodeURL)
+	fmt.Println(url)
 
-	resp, err := http.Get(geoCodeURL)
+	resp, err := http.Get(url)
 
 	if err != nil {
 		log.Fatal(err)
@@ -36,11 +42,15 @@ func GetGeocode() {
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(string(body))
+	var data []Hueta
 
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(data)
 }
