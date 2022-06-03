@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
 
 const token string = "da303db859918e01a675709c157ca661"
@@ -29,7 +30,7 @@ func buildURL() string {
 	return url
 }
 
-func GetGeocode() {
+func GetGeocode() (string, string) {
 
 	buildURL()
 	fmt.Println(url)
@@ -52,5 +53,21 @@ func GetGeocode() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(data)
+
+	out, err := json.Marshal(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stringOut := string(out)
+
+	res := strings.Split(stringOut, ",")
+
+	var lat, lon string = res[0], res[1]
+
+	lat = strings.ReplaceAll(lat, "[{\"lat\":", "")
+	lon = strings.ReplaceAll(lon, "\"lon\":", "")
+	lon = strings.ReplaceAll(lon, "}]", "")
+
+	return lat, lon
 }
