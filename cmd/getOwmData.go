@@ -1,4 +1,4 @@
-package controller
+package cmd
 
 import (
 	"encoding/json"
@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	a "github.com/Ulukbek-Toychuev/OpenWeather-Service/api"
 )
 
 const token string = "da303db859918e01a675709c157ca661"
@@ -37,7 +39,7 @@ func getGeocode() (string, string) {
 		log.Fatal(err)
 	}
 
-	var data []GeoCode
+	var data []a.GeoCode
 
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -79,7 +81,7 @@ func GetWeatherStat() {
 		log.Fatal(err)
 	}
 
-	var weatherOWM OWM
+	var weatherOWM a.OWM
 
 	err = json.Unmarshal(respBodyOWM, &weatherOWM)
 	if err != nil {

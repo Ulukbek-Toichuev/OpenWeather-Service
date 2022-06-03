@@ -1,9 +1,6 @@
-package controller
+package api
 
-/*type Coord struct {
-	CoordLon float64 `json:"lon"`
-	CoordLat float64 `json:"lat"`
-}*/
+//Struct for weather data in JSON format
 
 type GeoCode struct {
 	Lat float64 `json:"lat"`
