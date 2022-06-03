@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
 
 	a "github.com/Ulukbek-Toychuev/OpenWeather-Service/api"
 )
@@ -19,7 +18,7 @@ var (
 	city              string
 )
 
-func getGeocode() (string, string) {
+/*func getGeocode() (string, string) {
 	var lat, lon string
 
 	fmt.Print("Enter your city: ")
@@ -62,7 +61,7 @@ func getGeocode() (string, string) {
 	lon = strings.ReplaceAll(lon, "}]", "")
 
 	return lat, lon
-}
+}*/
 
 func GetWeatherStat() {
 	var lat, lon string
