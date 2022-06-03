@@ -85,6 +85,13 @@ func GetWeatherStat() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(weatherOWM.Main)
+
+	for _, p := range weatherOWM.Weather {
+		fmt.Println("-----------------")
+		fmt.Println("Briefly about the weather:", p.WeatherMain)
+		fmt.Println("Weather description:", p.WeatherDescription)
+	}
+
+	fmt.Printf("Current temperature: %.2f\n", weatherOWM.Main.MainTempMax-273.15)
 
 }

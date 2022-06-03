@@ -44,12 +44,12 @@ type OWM struct {
 		CloudsALL int `json:"all"`
 	}
 	Rain struct {
-		Rain1h int `json:"1h"`
-		Rain3h int `json:"3h"`
+		Rain1h float64 `json:"1h"`
+		Rain3h float64 `json:"3h"`
 	}
 	Snow struct {
-		Snow1h int `json:"1h"`
-		Snow3h int `json:"3h"`
+		Snow1h float64 `json:"1h"`
+		Snow3h float64 `json:"3h"`
 	}
 	DtOWM int `json:"dt"`
 	Sys   struct {
