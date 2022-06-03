@@ -20,7 +20,6 @@ func getGeocode() (string, string) {
 	GeoCodeUrl = GeoCodeUrl + token
 
 	resp, err := http.Get(GeoCodeUrl)
-
 	if err != nil {
 		log.Fatal(err)
 	}
