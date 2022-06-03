@@ -12,30 +12,20 @@ import (
 const token string = "da303db859918e01a675709c157ca661"
 
 var (
-	url  string = "http://api.openweathermap.org/geo/1.0/direct?q=,&appid="
-	city string
+	GeoCodeUrl        string = "http://api.openweathermap.org/geo/1.0/direct?q=,&appid="
+	CurrentWeatherUrl string = "https://api.openweathermap.org/data/2.5/weather?lat=&lon=&appid="
+	city              string
 )
 
-type Hueta struct {
-	Lat float64 `json:"lat"`
-	Lon float64 `json:"lon"`
-}
+func getGeocode() (string, string) {
+	var lat, lon string
 
-func buildURL() string {
 	fmt.Print("Enter your city: ")
 	fmt.Scanln(&city)
-	url = "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
-	url = url + token
+	GeoCodeUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
+	GeoCodeUrl = GeoCodeUrl + token
 
-	return url
-}
-
-func GetGeocode() (string, string) {
-
-	buildURL()
-	fmt.Println(url)
-
-	resp, err := http.Get(url)
+	resp, err := http.Get(GeoCodeUrl)
 
 	if err != nil {
 		log.Fatal(err)
@@ -47,7 +37,7 @@ func GetGeocode() (string, string) {
 		log.Fatal(err)
 	}
 
-	var data []Hueta
+	var data []GeoCode
 
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -63,11 +53,38 @@ func GetGeocode() (string, string) {
 
 	res := strings.Split(stringOut, ",")
 
-	var lat, lon string = res[0], res[1]
+	lat, lon = res[0], res[1]
 
 	lat = strings.ReplaceAll(lat, "[{\"lat\":", "")
 	lon = strings.ReplaceAll(lon, "\"lon\":", "")
 	lon = strings.ReplaceAll(lon, "}]", "")
 
 	return lat, lon
+}
+
+func GetWeatherStat() {
+	var lat, lon string
+	lat, lon = getGeocode()
+
+	CurrentWeatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "6&appid=" + token
+
+	requestOWM, err := http.Get(CurrentWeatherUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer requestOWM.Body.Close()
+
+	respBodyOWM, err := ioutil.ReadAll(requestOWM.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var weatherOWM OWM
+
+	err = json.Unmarshal(respBodyOWM, &weatherOWM)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(weatherOWM.Main)
+
 }
