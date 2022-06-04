@@ -1,6 +1,7 @@
 package api
 
-//Struct for weather data in JSON format
+// Структура для данных о погода в JSON формате
+// Struct for weather data in JSON format
 
 type GeoCode struct {
 	Lat float64 `json:"lat"`

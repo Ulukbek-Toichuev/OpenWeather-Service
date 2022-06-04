@@ -13,6 +13,8 @@ import (
 
 var lat, lon, city string
 
+// Эта функция нужна для получения геокода по указанному коду
+// This function is needed to get the geocode by the specified code
 func getGeocode() (string, string) {
 
 	fmt.Print("Enter your city: ")

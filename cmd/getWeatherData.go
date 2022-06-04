@@ -12,6 +12,8 @@ import (
 
 const token string = "da303db859918e01a675709c157ca661"
 
+//Интерфейс для методов которые взаимодействуют с Open Weather Map
+//Interface for methods that interact with Open Weather Map
 type GetOpenWeatherData interface {
 	GetWeatherStat()
 	GetAirPollution()
@@ -20,6 +22,8 @@ type GetOpenWeatherData interface {
 type OpenWeather struct {
 }
 
+//Функция для получения данных о погоде по указанному городу
+//Function for getting weather data for the specified city
 func (owm OpenWeather) GetWeatherStat() {
 	lat, lon := getGeocode()
 
@@ -53,7 +57,9 @@ func (owm OpenWeather) GetWeatherStat() {
 
 }
 
-func (owm OpenWeather) GetAirPollution() {
+//Функция для получения данных о загрязнении воздуха в указанном городе
+//Function to get data about air pollution in the specified city
+func (owm OpenWeather) GetAirPollution() a.AirPollution {
 	var lat, lon string
 	lat, lon = getGeocode()
 
@@ -78,5 +84,5 @@ func (owm OpenWeather) GetAirPollution() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(air)
+	return air
 }
