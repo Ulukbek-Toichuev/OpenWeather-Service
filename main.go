@@ -1,14 +1,15 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	s "github.com/Ulukbek-Toychuev/OpenWeather-Service/cmd"
 )
 
 func main() {
 
-	router := gin.Default()
+	var owm s.OpenWeather
+
+	owm.GetAirPollution()
+	/*router := gin.Default()
 	router.LoadHTMLGlob("tmp/*")
 
 	router.GET("/index", func(c *gin.Context) {
@@ -17,6 +18,6 @@ func main() {
 		})
 	})
 
-	router.Run(":8080")
+	router.Run(":8080")*/
 
 }

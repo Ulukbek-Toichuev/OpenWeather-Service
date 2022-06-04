@@ -12,77 +12,33 @@ import (
 
 const token string = "da303db859918e01a675709c157ca661"
 
-var (
-	GeoCodeUrl        string = "http://api.openweathermap.org/geo/1.0/direct?q=,&appid="
-	CurrentWeatherUrl string = "https://api.openweathermap.org/data/2.5/weather?lat=&lon=&appid="
-	city              string
-)
+type GetOpenWeatherData interface {
+	GetWeatherStat()
+	GetAirPollution()
+}
 
-/*func getGeocode() (string, string) {
-	var lat, lon string
+type OpenWeather struct {
+}
 
-	fmt.Print("Enter your city: ")
-	fmt.Scanln(&city)
-	GeoCodeUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
-	GeoCodeUrl = GeoCodeUrl + token
+func (owm OpenWeather) GetWeatherStat() {
+	lat, lon := getGeocode()
 
-	resp, err := http.Get(GeoCodeUrl)
+	CurrentWeatherUrl := "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "6&appid=" + token
 
+	requestWeather, err := http.Get(CurrentWeatherUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer requestWeather.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var data []a.GeoCode
-
-	err = json.Unmarshal(body, &data)
+	respBodyWeather, err := ioutil.ReadAll(requestWeather.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	out, err := json.Marshal(data)
-	if err != nil {
-		log.Fatal(err)
-	}
+	var weatherOWM a.CurrentWeather
 
-	stringOut := string(out)
-
-	res := strings.Split(stringOut, ",")
-
-	lat, lon = res[0], res[1]
-
-	lat = strings.ReplaceAll(lat, "[{\"lat\":", "")
-	lon = strings.ReplaceAll(lon, "\"lon\":", "")
-	lon = strings.ReplaceAll(lon, "}]", "")
-
-	return lat, lon
-}*/
-
-func GetWeatherStat() {
-	var lat, lon string
-	lat, lon = getGeocode()
-
-	CurrentWeatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "6&appid=" + token
-
-	requestOWM, err := http.Get(CurrentWeatherUrl)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer requestOWM.Body.Close()
-
-	respBodyOWM, err := ioutil.ReadAll(requestOWM.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var weatherOWM a.OWM
-
-	err = json.Unmarshal(respBodyOWM, &weatherOWM)
+	err = json.Unmarshal(respBodyWeather, &weatherOWM)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -95,4 +51,32 @@ func GetWeatherStat() {
 
 	fmt.Printf("Current temperature: %.2f\n", weatherOWM.Main.MainTempMax-273.15)
 
+}
+
+func (owm OpenWeather) GetAirPollution() {
+	var lat, lon string
+	lat, lon = getGeocode()
+
+	currentAirPollutionURL := "http://api.openweathermap.org/data/2.5/air_pollution?lat=" + lat + "&lon=" + lon + "&appid=" + token + ""
+
+	requestAir, err := http.Get(currentAirPollutionURL)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer requestAir.Body.Close()
+	responseBodyAir, err := ioutil.ReadAll(requestAir.Body)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var air a.AirPollution
+
+	err = json.Unmarshal(responseBodyAir, &air)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(air)
 }

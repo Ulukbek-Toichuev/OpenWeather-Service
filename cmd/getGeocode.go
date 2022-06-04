@@ -11,12 +11,13 @@ import (
 	a "github.com/Ulukbek-Toychuev/OpenWeather-Service/api"
 )
 
+var lat, lon, city string
+
 func getGeocode() (string, string) {
-	var lat, lon string
 
 	fmt.Print("Enter your city: ")
 	fmt.Scanln(&city)
-	GeoCodeUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
+	GeoCodeUrl := "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
 	GeoCodeUrl = GeoCodeUrl + token
 
 	resp, err := http.Get(GeoCodeUrl)

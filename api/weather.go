@@ -14,7 +14,7 @@ type Weather struct {
 	WeatherIcon        string `json:"icon"`
 }
 
-type OWM struct {
+type CurrentWeather struct {
 	Coord struct {
 		CoordLon float64 `json:"lon"`
 		CoordLat float64 `json:"lat"`
