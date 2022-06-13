@@ -1,7 +1,7 @@
 package api
 
-// Структура для данных о загрязнении воздуха в JSON формате
-// Structure for air pollution data in JSON format
+// Структура для данных о загрязнении воздуха в JSON формате.
+// Structure for air pollution data in JSON format.
 type AirPollution struct {
 	Coord struct {
 		CoordLon float64 `json:"lon"`

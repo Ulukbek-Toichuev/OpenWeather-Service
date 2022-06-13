@@ -38,9 +38,6 @@ footer{
     text-align: center;
 }
 
-a{
-    color: white;
-}
 
 .main{
     max-width: 800px;
@@ -48,26 +45,30 @@ a{
     padding: 40px 20px;
 }
 
-input,
+
 label,
 button{
+    font-size: 25px;
+    font-weight: bold;
+}
+
+input{
     font-size: 25px;
 }
 
 input[type="text"]{
     background: transparent;
-    border-radius: 3px;
+    border-radius: 6px;
 
 }
 
 button{
-    background-color:coral;
+    background-color:tomato;
     color: white;
     border: none;
-    border-radius: 3px;
+    border-radius: 5px;
     cursor: pointer;
 
 }
-
 
 

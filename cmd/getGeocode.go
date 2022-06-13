@@ -16,8 +16,6 @@ var lat, lon, city string
 // This function is needed to get the geocode by the specified code
 func getGeocode(city string) (string, string) {
 
-	//fmt.Print("Enter your city: ")
-	//fmt.Scanln(&city)
 	GeoCodeUrl := "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
 	GeoCodeUrl = GeoCodeUrl + token
 
