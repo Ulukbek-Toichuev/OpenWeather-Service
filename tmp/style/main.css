@@ -3,6 +3,10 @@ body{
     font-family:'Trebuchet MS', sans-serif;
     font-size: 20px;
     color:black;
+    background-image: url("image/wallpaper.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 *,
@@ -21,11 +25,21 @@ body{
 header,
 footer{
     padding: 20px;
-    background-color: slategrey;
+}
+
+header{
+    background-color:khaki;
+    text-align: center;
 }
 
 footer{
     margin-top: auto;
+    background-color:darkslategray;
+    text-align: center;
+}
+
+a{
+    color: white;
 }
 
 .main{
@@ -34,7 +48,26 @@ footer{
     padding: 40px 20px;
 }
 
+input,
+label,
+button{
+    font-size: 25px;
+}
 
+input[type="text"]{
+    background: transparent;
+    border-radius: 3px;
+
+}
+
+button{
+    background-color:coral;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+
+}
 
 
 
