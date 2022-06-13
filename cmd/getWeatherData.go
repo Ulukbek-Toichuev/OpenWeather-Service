@@ -22,9 +22,9 @@ type GetOpenWeatherData interface {
 type OpenWeather struct {
 }
 
-//Функция для получения данных о погоде по указанному городу
-//Function for getting weather data for the specified city
-func (owm OpenWeather) GetWeatherStat(city string) float64 {
+//Функция для получения данных о погоде по указанному городу.
+//Function for getting weather data for the specified city.
+func (owm OpenWeather) GetWeatherStat(city string) (float64, string) {
 	lat, lon := getGeocode(city)
 
 	CurrentWeatherUrl := "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "6&appid=" + token
@@ -41,28 +41,27 @@ func (owm OpenWeather) GetWeatherStat(city string) float64 {
 	}
 
 	var weatherOWM a.CurrentWeather
+	var weatherDesc string
 
 	err = json.Unmarshal(respBodyWeather, &weatherOWM)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for _, p := range weatherOWM.Weather {
-		fmt.Println("-----------------")
-		fmt.Println("Briefly about the weather:", p.WeatherMain)
-		fmt.Println("Weather description:", p.WeatherDescription)
-	}
-
 	currentWeather := weatherOWM.Main.MainTempMax - 273.15
+
+	for _, p := range weatherOWM.Weather {
+		weatherDesc = p.WeatherDescription
+	}
 
 	fmt.Printf("Current temperature: %.2f\n", currentWeather)
 
-	return currentWeather
+	return currentWeather, weatherDesc
 
 }
 
-//Функция для получения данных о загрязнении воздуха в указанном городе
-//Function to get data about air pollution in the specified city
+//Функция для получения данных о загрязнении воздуха в указанном городе.
+//Function to get data about air pollution in the specified city.
 func (owm OpenWeather) GetAirPollution(city string) a.AirPollution {
 	var lat, lon string
 	lat, lon = getGeocode(city)

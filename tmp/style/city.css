@@ -1,0 +1,35 @@
+body{
+    margin: 0;
+    font-family:'Trebuchet MS', sans-serif;
+    font-size: 20px;
+    color:black;
+}
+
+*,
+*:before,
+*:after{
+    box-sizing: border-box;
+}
+
+.page{
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header,
+footer{
+    padding: 20px;
+    background-color: slategrey;
+}
+
+footer{
+    margin-top: auto;
+}
+
+.main{
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}

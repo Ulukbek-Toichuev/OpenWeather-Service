@@ -12,12 +12,15 @@ import (
 //Здесь будет код который рендерит HTML страницу
 //Here will be the code that renders the HTML page
 
-var tmp *template.Template
-var owm s.OpenWeather
-var weatherOWM a.CurrentWeather
+var (
+	tmp        *template.Template
+	owm        s.OpenWeather
+	weatherOWM a.CurrentWeather
+)
 
 func init() {
 	tmp = template.Must(template.ParseGlob("tmp/*.html"))
+	http.Handle("/style/", http.StripPrefix("/style", http.FileServer(http.Dir("tmp/style"))))
 }
 
 func Server() {
@@ -37,15 +40,18 @@ func selectCity(w http.ResponseWriter, r *http.Request) {
 	}
 	fCity := r.FormValue("City")
 
-	temp := owm.GetWeatherStat(fCity)
-	//owm.GetWeatherStat(fCity)
+	temp, weathDesc := owm.GetWeatherStat(fCity)
 
-	s := fmt.Sprintf("%f", temp)
+	s := fmt.Sprintf("%.2f", temp)
 
 	c := struct {
-		TempCur string
+		TempCur  string
+		City     string
+		Describe string
 	}{
-		TempCur: s,
+		TempCur:  s,
+		City:     fCity,
+		Describe: weathDesc,
 	}
 
 	tmp.ExecuteTemplate(w, "city.html", c)
