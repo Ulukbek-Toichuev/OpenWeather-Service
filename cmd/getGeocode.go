@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,10 +14,10 @@ var lat, lon, city string
 
 // Эта функция нужна для получения геокода по указанному коду
 // This function is needed to get the geocode by the specified code
-func getGeocode() (string, string) {
+func getGeocode(city string) (string, string) {
 
-	fmt.Print("Enter your city: ")
-	fmt.Scanln(&city)
+	//fmt.Print("Enter your city: ")
+	//fmt.Scanln(&city)
 	GeoCodeUrl := "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
 	GeoCodeUrl = GeoCodeUrl + token
 

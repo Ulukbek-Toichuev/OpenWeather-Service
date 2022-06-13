@@ -24,8 +24,8 @@ type OpenWeather struct {
 
 //Функция для получения данных о погоде по указанному городу
 //Function for getting weather data for the specified city
-func (owm OpenWeather) GetWeatherStat() {
-	lat, lon := getGeocode()
+func (owm OpenWeather) GetWeatherStat(city string) float64 {
+	lat, lon := getGeocode(city)
 
 	CurrentWeatherUrl := "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "6&appid=" + token
 
@@ -53,15 +53,19 @@ func (owm OpenWeather) GetWeatherStat() {
 		fmt.Println("Weather description:", p.WeatherDescription)
 	}
 
-	fmt.Printf("Current temperature: %.2f\n", weatherOWM.Main.MainTempMax-273.15)
+	currentWeather := weatherOWM.Main.MainTempMax - 273.15
+
+	fmt.Printf("Current temperature: %.2f\n", currentWeather)
+
+	return currentWeather
 
 }
 
 //Функция для получения данных о загрязнении воздуха в указанном городе
 //Function to get data about air pollution in the specified city
-func (owm OpenWeather) GetAirPollution() a.AirPollution {
+func (owm OpenWeather) GetAirPollution(city string) a.AirPollution {
 	var lat, lon string
-	lat, lon = getGeocode()
+	lat, lon = getGeocode(city)
 
 	currentAirPollutionURL := "http://api.openweathermap.org/data/2.5/air_pollution?lat=" + lat + "&lon=" + lon + "&appid=" + token + ""
 
@@ -83,6 +87,8 @@ func (owm OpenWeather) GetAirPollution() a.AirPollution {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Println(air.List)
 
 	return air
 }

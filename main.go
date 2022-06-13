@@ -1,14 +1,17 @@
 package main
 
 import (
-	s "github.com/Ulukbek-Toychuev/OpenWeather-Service/cmd"
+	//s "github.com/Ulukbek-Toychuev/OpenWeather-Service/cmd"
+	s "github.com/Ulukbek-Toychuev/OpenWeather-Service/cmd/routers"
 )
 
 func main() {
+	s.Server()
+	//var owm s.OpenWeather
 
-	var owm s.OpenWeather
+	//owm.GetWeatherStat()
 
-	owm.GetAirPollution()
+	//owm.GetWeatherStat()
 	/*router := gin.Default()
 	router.LoadHTMLGlob("tmp/*")
 
