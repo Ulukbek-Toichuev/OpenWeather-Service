@@ -17,9 +17,13 @@
         </header>
         
         <div class="main">
+            {{if lt .Len 2}}
+            <h2>Check your cities name, bad request!</h2>
+            {{else}}
             <h2>Current Weather</h2>
                 <p>{{.City}} = {{.TempCur}}</p>
                 <p>{{.Describe}}</p>
+            {{end}}
         </div>
 
         <footer>

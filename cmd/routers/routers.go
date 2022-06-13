@@ -1,9 +1,13 @@
 package routers
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"strings"
 
 	a "github.com/Ulukbek-Toychuev/OpenWeather-Service/api"
 	s "github.com/Ulukbek-Toychuev/OpenWeather-Service/cmd"
@@ -13,10 +17,20 @@ import (
 //Here will be the code that renders the HTML page
 
 var (
-	tmp        *template.Template
-	owm        s.OpenWeather
-	weatherOWM a.CurrentWeather
+	tmp         *template.Template
+	owm         s.OpenWeather
+	weatherOWM  a.CurrentWeather
+	lat         string
+	lon         string
+	city        string
+	weatherDesc string
 )
+
+type Bind struct {
+	Len int
+}
+
+const token string = "da303db859918e01a675709c157ca661"
 
 func init() {
 	tmp = template.Must(template.ParseGlob("tmp/*.html"))
@@ -25,7 +39,7 @@ func init() {
 
 func Server() {
 	http.HandleFunc("/", mainPage)
-	http.HandleFunc("/City", selectCity)
+	http.HandleFunc("/City", SelectCity)
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -33,26 +47,100 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 	tmp.ExecuteTemplate(w, "main.html", nil)
 }
 
-func selectCity(w http.ResponseWriter, r *http.Request) {
+func SelectCity(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
+
 	fCity := r.FormValue("City")
 
-	temp, weathDesc := owm.GetWeatherStat(fCity)
+	//temp, weathDesc, l := owm.GetWeatherStat(fCity)
+	// Begin
+	city = fCity
 
-	s := fmt.Sprintf("%.2f", temp)
+	GeoCodeUrl := "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
+	GeoCodeUrl = GeoCodeUrl + token
+	fmt.Println(token)
 
-	c := struct {
-		TempCur  string
-		City     string
-		Describe string
-	}{
-		TempCur:  s,
-		City:     fCity,
-		Describe: weathDesc,
+	resp, err := http.Get(GeoCodeUrl)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	tmp.ExecuteTemplate(w, "city.html", c)
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var data []a.GeoCode
+
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	out, err := json.Marshal(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stringOut := string(out)
+
+	res := strings.Split(stringOut, ",")
+	if len(res) < 2 {
+		data := Bind{
+			Len: len(res),
+		}
+		tmp.ExecuteTemplate(w, "city.html", data)
+	} else {
+		lat, lon = res[0], res[1]
+		lat = strings.ReplaceAll(lat, "[{\"lat\":", "")
+		lon = strings.ReplaceAll(lon, "\"lon\":", "")
+		lon = strings.ReplaceAll(lon, "}]", "")
+
+		CurrentWeatherUrl := "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "6&appid=" + token
+
+		requestWeather, err := http.Get(CurrentWeatherUrl)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer requestWeather.Body.Close()
+
+		respBodyWeather, err := ioutil.ReadAll(requestWeather.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(respBodyWeather, &weatherOWM)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		currentWeather := weatherOWM.Main.MainTempMax - 273.15
+
+		for _, p := range weatherOWM.Weather {
+			weatherDesc = p.WeatherDescription
+		}
+
+		s := fmt.Sprintf("%.2f", currentWeather)
+		Len := len(res)
+
+		c := struct {
+			TempCur  string
+			City     string
+			Describe string
+			Len      int
+		}{
+			TempCur:  s,
+			City:     fCity,
+			Describe: weatherDesc,
+			Len:      Len,
+		}
+
+		tmp.ExecuteTemplate(w, "city.html", c)
+	}
+
 }

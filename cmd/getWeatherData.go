@@ -1,15 +1,5 @@
 package cmd
 
-import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-
-	a "github.com/Ulukbek-Toychuev/OpenWeather-Service/api"
-)
-
 const token string = "da303db859918e01a675709c157ca661"
 
 //Интерфейс для методов которые взаимодействуют с Open Weather Map
@@ -24,8 +14,9 @@ type OpenWeather struct {
 
 //Функция для получения данных о погоде по указанному городу.
 //Function for getting weather data for the specified city.
-func (owm OpenWeather) GetWeatherStat(city string) (float64, string) {
-	lat, lon := getGeocode(city)
+/*func (owm OpenWeather) GetWeatherStat(city string) (float64, string, int) {
+	lat, lon, l := getGeocode(city)
+	fmt.Println("*** FUNC GetWeatherStat ***", l)
 
 	CurrentWeatherUrl := "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "6&appid=" + token
 
@@ -56,15 +47,15 @@ func (owm OpenWeather) GetWeatherStat(city string) (float64, string) {
 
 	fmt.Printf("Current temperature: %.2f\n", currentWeather)
 
-	return currentWeather, weatherDesc
+	return currentWeather, weatherDesc, l
 
 }
 
 //Функция для получения данных о загрязнении воздуха в указанном городе.
 //Function to get data about air pollution in the specified city.
-func (owm OpenWeather) GetAirPollution(city string) a.AirPollution {
+func (owm OpenWeather) GetAirPollution(city string) (a.AirPollution, int) {
 	var lat, lon string
-	lat, lon = getGeocode(city)
+	lat, lon, l := getGeocode(city)
 
 	currentAirPollutionURL := "http://api.openweathermap.org/data/2.5/air_pollution?lat=" + lat + "&lon=" + lon + "&appid=" + token + ""
 
@@ -89,5 +80,5 @@ func (owm OpenWeather) GetAirPollution(city string) a.AirPollution {
 
 	fmt.Println(air.List)
 
-	return air
-}
+	return air, l
+}*/
