@@ -40,7 +40,7 @@ func init() {
 func Server() {
 	http.HandleFunc("/", mainPage)
 	http.HandleFunc("/City", SelectCity)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
 
 func mainPage(w http.ResponseWriter, r *http.Request) {
@@ -54,93 +54,101 @@ func SelectCity(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fCity := r.FormValue("City")
-
-	//temp, weathDesc, l := owm.GetWeatherStat(fCity)
-	// Begin
-	city = fCity
-
-	GeoCodeUrl := "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
-	GeoCodeUrl = GeoCodeUrl + token
-	fmt.Println(token)
-
-	resp, err := http.Get(GeoCodeUrl)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var data []a.GeoCode
-
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	out, err := json.Marshal(data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	stringOut := string(out)
-
-	res := strings.Split(stringOut, ",")
-	if len(res) < 2 {
+	if len(fCity) < 2 {
 		data := Bind{
-			Len: len(res),
+			Len: len(fCity),
 		}
 		tmp.ExecuteTemplate(w, "city.html", data)
 	} else {
-		lat, lon = res[0], res[1]
-		lat = strings.ReplaceAll(lat, "[{\"lat\":", "")
-		lon = strings.ReplaceAll(lon, "\"lon\":", "")
-		lon = strings.ReplaceAll(lon, "}]", "")
 
-		CurrentWeatherUrl := "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "6&appid=" + token
+		city = fCity
 
-		requestWeather, err := http.Get(CurrentWeatherUrl)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer requestWeather.Body.Close()
+		GeoCodeUrl := "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
+		GeoCodeUrl = GeoCodeUrl + token
+		fmt.Println(token)
 
-		respBodyWeather, err := ioutil.ReadAll(requestWeather.Body)
+		resp, err := http.Get(GeoCodeUrl)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		err = json.Unmarshal(respBodyWeather, &weatherOWM)
+		defer resp.Body.Close()
+
+		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		currentWeather := weatherOWM.Main.MainTempMax - 273.15
+		var data []a.GeoCode
 
-		for _, p := range weatherOWM.Weather {
-			weatherDesc = p.WeatherDescription
+		err = json.Unmarshal(body, &data)
+		if err != nil {
+			log.Fatal(err)
 		}
 
-		s := fmt.Sprintf("%.2f", currentWeather)
-		Len := len(res)
-
-		c := struct {
-			TempCur  string
-			City     string
-			Describe string
-			Len      int
-		}{
-			TempCur:  s,
-			City:     fCity,
-			Describe: weatherDesc,
-			Len:      Len,
+		out, err := json.Marshal(data)
+		if err != nil {
+			log.Fatal(err)
 		}
 
-		tmp.ExecuteTemplate(w, "city.html", c)
+		stringOut := string(out)
+
+		res := strings.Split(stringOut, ",")
+		if len(res) < 2 {
+			data := Bind{
+				Len: len(res),
+			}
+			tmp.ExecuteTemplate(w, "city.html", data)
+		} else {
+			lat, lon = res[0], res[1]
+			lat = strings.ReplaceAll(lat, "[{\"lat\":", "")
+			lon = strings.ReplaceAll(lon, "\"lon\":", "")
+			lon = strings.ReplaceAll(lon, "}]", "")
+
+			CurrentWeatherUrl := "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "6&appid=" + token
+
+			requestWeather, err := http.Get(CurrentWeatherUrl)
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer requestWeather.Body.Close()
+
+			respBodyWeather, err := ioutil.ReadAll(requestWeather.Body)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			err = json.Unmarshal(respBodyWeather, &weatherOWM)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			currentWeather := weatherOWM.Main.MainTempMax - 273.15
+
+			for _, p := range weatherOWM.Weather {
+				weatherDesc = p.WeatherDescription
+			}
+
+			s := fmt.Sprintf("%.2f", currentWeather)
+			Len := len(res)
+
+			c := struct {
+				TempCur  string
+				City     string
+				Describe string
+				Len      int
+			}{
+				TempCur:  s,
+				City:     fCity,
+				Describe: weatherDesc,
+				Len:      Len,
+			}
+
+			tmp.ExecuteTemplate(w, "city.html", c)
+		}
+
 	}
+	//temp, weathDesc, l := owm.GetWeatherStat(fCity)
+	// Begin
 
 }
