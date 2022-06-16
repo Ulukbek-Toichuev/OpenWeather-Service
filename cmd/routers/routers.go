@@ -1,16 +1,12 @@
 package routers
 
 import (
-	"encoding/json"
-	"fmt"
 	"html/template"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 
-	a "github.com/Ulukbek-Toychuev/OpenWeather-Service/api"
-	s "github.com/Ulukbek-Toychuev/OpenWeather-Service/cmd"
+	apiJSON "github.com/Ulukbek-Toychuev/OpenWeather-Service/api"
+	cmd "github.com/Ulukbek-Toychuev/OpenWeather-Service/cmd"
 )
 
 //Здесь будет код который рендерит HTML страницу
@@ -18,8 +14,8 @@ import (
 
 var (
 	tmp         *template.Template
-	owm         s.OpenWeather
-	weatherOWM  a.CurrentWeather
+	owm         cmd.OpenWeather
+	weatherOWM  apiJSON.CurrentWeather
 	lat         string
 	lon         string
 	city        string
@@ -63,35 +59,9 @@ func SelectCity(w http.ResponseWriter, r *http.Request) {
 
 		city = fCity
 
-		GeoCodeUrl := "http://api.openweathermap.org/geo/1.0/direct?q=" + city + ",&appid="
-		GeoCodeUrl = GeoCodeUrl + token
-		fmt.Println(token)
+		owm.GetGeocode(city)
 
-		resp, err := http.Get(GeoCodeUrl)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		defer resp.Body.Close()
-
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		var data []a.GeoCode
-
-		err = json.Unmarshal(body, &data)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		out, err := json.Marshal(data)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		stringOut := string(out)
+		stringOut := string(owm.GetGeocode(city))
 
 		res := strings.Split(stringOut, ",")
 		if len(res) < 2 {
@@ -107,31 +77,8 @@ func SelectCity(w http.ResponseWriter, r *http.Request) {
 
 			CurrentWeatherUrl := "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "6&appid=" + token
 
-			requestWeather, err := http.Get(CurrentWeatherUrl)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer requestWeather.Body.Close()
-
-			respBodyWeather, err := ioutil.ReadAll(requestWeather.Body)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			err = json.Unmarshal(respBodyWeather, &weatherOWM)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			currentWeather := weatherOWM.Main.MainTempMax - 273.15
-
-			for _, p := range weatherOWM.Weather {
-				weatherDesc = p.WeatherDescription
-			}
-
-			s := fmt.Sprintf("%.2f", currentWeather)
+			s, weatherDesc := owm.GetWeatherStat(CurrentWeatherUrl)
 			Len := len(res)
-
 			c := struct {
 				TempCur  string
 				City     string
@@ -148,7 +95,4 @@ func SelectCity(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	//temp, weathDesc, l := owm.GetWeatherStat(fCity)
-	// Begin
-
 }
