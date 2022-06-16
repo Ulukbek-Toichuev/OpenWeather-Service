@@ -51,15 +51,14 @@ func SelectCity(w http.ResponseWriter, r *http.Request) {
 
 	fCity := r.FormValue("City")
 	if len(fCity) < 2 {
-		data := Bind{
+		http.Redirect(w, r, "/", http.StatusBadRequest)
+		/*data := Bind{
 			Len: len(fCity),
 		}
-		tmp.ExecuteTemplate(w, "city.html", data)
+		tmp.ExecuteTemplate(w, "city.html", data)*/
 	} else {
 
 		city = fCity
-
-		owm.GetGeocode(city)
 
 		stringOut := string(owm.GetGeocode(city))
 
@@ -93,6 +92,5 @@ func SelectCity(w http.ResponseWriter, r *http.Request) {
 
 			tmp.ExecuteTemplate(w, "city.html", c)
 		}
-
 	}
 }

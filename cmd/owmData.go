@@ -35,7 +35,7 @@ func (owm OpenWeather) GetGeocode(city string) []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	log.Println(requestGeocode.Request.Method, geoCodeUrl, requestGeocode.Status)
 	defer requestGeocode.Body.Close()
 
 	geocodeBody, err := ioutil.ReadAll(requestGeocode.Body)
@@ -66,6 +66,7 @@ func (owm OpenWeather) GetWeatherStat(city string) (string, string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println(requestWeather.Request.Method, city, requestWeather.Status)
 	defer requestWeather.Body.Close()
 
 	respBodyWeather, err := ioutil.ReadAll(requestWeather.Body)
@@ -85,7 +86,6 @@ func (owm OpenWeather) GetWeatherStat(city string) (string, string) {
 	s := fmt.Sprintf("%.2f", weatherOWM.Main.MainTemp-273.15)
 
 	return s, weatherDesc
-
 }
 
 //Функция для получения данных о загрязнении воздуха в указанном городе.
@@ -96,6 +96,7 @@ func (owm OpenWeather) GetAirPollution(city string) jsonSchema.AirPollution {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println(requestAir.Request.Method, city, requestAir.Status)
 	defer requestAir.Body.Close()
 
 	responseBodyAir, err := ioutil.ReadAll(requestAir.Body)
