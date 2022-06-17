@@ -16,10 +16,10 @@
 
         <div class="main">
             <h2>Enter the city where you want to know the current temperature</h2>
-            <form action="/City" method="POST">
+            <form action="/City" method="get">
     
                 <label for="City">City</label>
-                <input type="text" id="City" name="City">
+                <input type="text" id="City" name="City" required pattern="[aA-zZ]+">
                 <button type="submit">GO!</button>
                 </form>
         </div>

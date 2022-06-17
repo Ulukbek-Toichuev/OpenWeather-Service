@@ -15,7 +15,7 @@ const (
 	aqi   string = "&aqi=yes"
 )
 
-func GetData(city string) jsonSchema.Data {
+func GetData(city string) (jsonSchema.Data, int) {
 	var currData jsonSchema.Data
 
 	//Создаем URL
@@ -26,7 +26,7 @@ func GetData(city string) jsonSchema.Data {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(request.Request.Method, request.Status)
+	//log.Println(request.Request.Method, request.Status)
 	defer request.Body.Close()
 
 	//Читаем и записываем данные с тела
@@ -40,5 +40,5 @@ func GetData(city string) jsonSchema.Data {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return currData
+	return currData, request.StatusCode
 }

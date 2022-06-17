@@ -1,59 +1,45 @@
 package routers
 
 import (
-	"fmt"
 	"log"
-	"net/http"
-	"text/template"
 
 	currentData "github.com/Ulukbek-Toychuev/OpenWeather-Service/cmd"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/gofiber/template/html"
 )
 
-//Здесь будет код который рендерит HTML страницу
-//Here will be the code that renders the HTML page
+func FiberTest() {
+	engine := html.New("./tmp", ".html")
 
-var tmp *template.Template
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
+	app.Use(logger.New())
+	app.Use(requestid.New())
 
-func init() {
-	tmp = template.Must(template.ParseGlob("tmp/*.html"))
-	http.Handle("/style/", http.StripPrefix("/style", http.FileServer(http.Dir("tmp/style"))))
-}
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.Render("main", fiber.Map{
+			"City": "City",
+		})
+	})
 
-func Server() {
-	http.HandleFunc("/", mainPage)
-	http.HandleFunc("/City", SelectCity)
-	http.ListenAndServe(":80", nil)
-}
+	app.Get("/City", func(c *fiber.Ctx) error {
+		city := c.FormValue("City")
+		resData, stat := currentData.GetData(city)
+		aqiRes := currentData.GetAQI(&resData)
+		if stat == 400 {
+			return c.Render("cityBadReq", c.SendStatus(400))
+		}
+		return c.Render("city", fiber.Map{
+			"Country":  resData.Location.Country,
+			"City":     city,
+			"CurrTemp": resData.Current.CurrentTemp,
+			"Desc":     resData.Current.Condition.Text,
+			"AQI":      aqiRes,
+		})
+	})
 
-func mainPage(w http.ResponseWriter, r *http.Request) {
-	tmp.ExecuteTemplate(w, "main.html", nil)
-}
-
-func SelectCity(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-	city := r.FormValue("City")
-	if len(city) < 2 {
-		fmt.Println("ERROR")
-	}
-	resData := currentData.GetData(city)
-	aqiRes := currentData.GetAQI(&resData)
-	log.Println(aqiRes)
-	c := struct {
-		CurrTemp float32
-		City     string
-		Country  string
-		Desc     string
-		AQI      string
-	}{
-		CurrTemp: resData.Current.CurrentTemp,
-		City:     city,
-		Country:  resData.Location.Country,
-		Desc:     resData.Current.Condition.Text,
-		AQI:      aqiRes,
-	}
-	tmp.ExecuteTemplate(w, "city.html", c)
-
+	log.Fatal(app.Listen(":80"))
 }
