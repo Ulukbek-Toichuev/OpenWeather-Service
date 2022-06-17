@@ -16,6 +16,7 @@ func FiberTest() {
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
+	app.Static("/", "./tmp/style")
 	app.Use(logger.New())
 	app.Use(requestid.New())
 
