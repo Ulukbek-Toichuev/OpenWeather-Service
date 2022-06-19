@@ -2,9 +2,11 @@ package api
 
 type Data struct {
 	Location struct {
-		Name      string `json:"name"`
-		Country   string `json:"country"`
-		LocalTime string `json:"localtime"`
+		Name      string  `json:"name"`
+		Country   string  `json:"country"`
+		Lat       float64 `json:lat`
+		Lon       float64 `json:lon`
+		LocalTime string  `json:"localtime"`
 	}
 	Current struct {
 		Last_Update string  `json:"last_updated"`
